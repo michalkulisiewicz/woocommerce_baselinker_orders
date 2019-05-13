@@ -239,6 +239,13 @@ while True:
         resp = wcapi.post("orders", order)
         if resp.status_code == 201:
             resp_json = resp.json()
+        elif resp.status_code == 400:
+            resp_json = resp.json()
+            for id in order['meta_data']:
+                if id['key'] == 'baselinker_order_id':
+                    order_id = id['value']
+                    message = resp_json['message']
+                    print('issues with order_id: {}. {}'.format(order_id, message))
         else:
             for id in order['meta_data']:
                 if id['key'] == 'baselinker_order_id':

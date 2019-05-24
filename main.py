@@ -22,6 +22,10 @@ def del_hyphen(post_code):
     post_code = post_code.replace('-','')
     return post_code
 
+def remove_accent(accented_string):
+    unaccented_string = unidecode.unidecode(accented_string)
+    return unaccented_string
+
 def get_first_name(fullname):
     first_name = fullname.split(' ')
     return first_name[0]

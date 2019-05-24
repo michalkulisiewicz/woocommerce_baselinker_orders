@@ -154,24 +154,24 @@ def create_woo_order(bs_orders):
     orders = []
 
     for id in bs_orders['orders']:
-        payment_method = id['payment_method']
+        payment_method = remove_accent(id['payment_method'])
 
-        invoice_fullname = id['invoice_fullname']
-        invoice_address = id['invoice_address']
-        invoice_city = id['invoice_city']
+        invoice_fullname = remove_accent(id['invoice_fullname'])
+        invoice_address = remove_accent(id['invoice_address'])
+        invoice_city = remove_accent(id['invoice_city'])
         invoice_postcode = del_hyphen(id['invoice_postcode'])
-        invoice_country = id['invoice_country']
-        invoice_company = id['invoice_company']
+        invoice_country = remove_accent(id['invoice_country'])
+        invoice_company = remove_accent(id['invoice_company'])
 
-        email = id['email']
+        email = remove_accent(id['email'])
         phone = id['phone']
 
-        delivery_fullname = id['delivery_fullname']
-        delivery_address = id['delivery_address']
-        delivery_city = id['delivery_city']
+        delivery_fullname = remove_accent(id['delivery_fullname'])
+        delivery_address = remove_accent(id['delivery_address'])
+        delivery_city = remove_accent(id['delivery_city'])
         delivery_postcode = del_hyphen(id['delivery_postcode'])
-        delivery_country = id['delivery_country']
-        delivery_company = id['delivery_company']
+        delivery_country = remove_accent(id['delivery_country'])
+        delivery_company = remove_accent(id['delivery_company'])
 
         currency = id['currency']
 

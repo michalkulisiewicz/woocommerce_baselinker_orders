@@ -3,6 +3,8 @@ import json
 import requests
 import time
 import datetime
+import unidecode
+
 
 url = 'https://api.baselinker.com/connector.php'
 token = '1011-10210-OYC7U14WRGM51M3WD5OKJ9TZPSO60MXQ09MJL92BGZ71Z0ME9DERL4INTVCTT3DS'
@@ -15,6 +17,10 @@ wcapi = API(
     wp_api=True,
     version="wc/v3"
 )
+
+def del_hyphen(post_code):
+    post_code = post_code.replace('-','')
+    return post_code
 
 def get_first_name(fullname):
     first_name = fullname.split(' ')
@@ -149,7 +155,7 @@ def create_woo_order(bs_orders):
         invoice_fullname = id['invoice_fullname']
         invoice_address = id['invoice_address']
         invoice_city = id['invoice_city']
-        invoice_postcode = id['invoice_postcode']
+        invoice_postcode = del_hyphen(id['invoice_postcode'])
         invoice_country = id['invoice_country']
         invoice_company = id['invoice_company']
 
@@ -159,7 +165,7 @@ def create_woo_order(bs_orders):
         delivery_fullname = id['delivery_fullname']
         delivery_address = id['delivery_address']
         delivery_city = id['delivery_city']
-        delivery_postcode = id['delivery_postcode']
+        delivery_postcode = del_hyphen(id['delivery_postcode'])
         delivery_country = id['delivery_country']
         delivery_company = id['delivery_company']
 

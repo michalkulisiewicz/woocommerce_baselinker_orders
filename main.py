@@ -230,7 +230,7 @@ if source_status == '':
 dest_status = input('Provide destination status: [press enter for default]: ')
 
 if dest_status == '':
-    dest_status = 86474
+    dest_status = 166337
 
 
 while True:

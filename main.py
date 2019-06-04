@@ -1,6 +1,7 @@
 from woocommerce import API
 import json
 import requests
+from requests import Timeout
 import time
 import datetime
 import unidecode
@@ -207,6 +208,7 @@ def create_woo_order(bs_orders):
                                   delivery_city,
                                   delivery_postcode,
                                   delivery_country,
+
                                   delivery_company,
                                   line_items_array,
                                   currency,
@@ -246,25 +248,33 @@ while True:
 
 
     for order in orders:
-        resp = wcapi.post("orders", order)
+        try:
+            resp = wcapi.post("orders", order)
+        except Timeout as err:
+            print('Request timed out at: {} with error: {}'.format(datetime.datetime.now(), err))
+
         if resp.status_code == 201:
             resp_json = resp.json()
+
+            for id in resp_json['meta_data']:
+                if id['key'] == 'baselinker_order_id':
+                    order_id = id['value']
+                    change_status = set_order_status(order_id, dest_status)
+                    if change_status != 200:
+                        print('Issue with changing status for order_id: {}'.format(order_id))
+                    else:
+                        print('Changed status of order id: {} to {} at: {}'.format(order_id, dest_status, datetime.datetime.now() ) )
+
         elif resp.status_code == 400:
             resp_json = resp.json()
             for id in order['meta_data']:
                 if id['key'] == 'baselinker_order_id':
                     order_id = id['value']
                     message = resp_json['message']
-                    print('issues with order_id: {}. {}'.format(order_id, message))
+                    print('Issues with order_id: {}. {}'.format(order_id, message))
         else:
             for id in order['meta_data']:
                 if id['key'] == 'baselinker_order_id':
                     order_id = id['value']
-                    print('issues with order_id: {}'.format(order_id))
+                    print('Issues with order_id: {}'.format(order_id))
 
-        for id in resp_json['meta_data']:
-            if id['key'] == 'baselinker_order_id':
-                order_id = id['value']
-                change_status = set_order_status(order_id,dest_status)
-                if change_status != 200:
-                    print('issue with changing status for order_id: {}'.format(order_id))

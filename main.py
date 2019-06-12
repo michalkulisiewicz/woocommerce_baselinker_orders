@@ -122,7 +122,7 @@ def parse_order(
     billing['postcode'] = invoice_postcode
     billing['country'] = invoice_country
     billing['company'] = invoice_company
-    billing['email'] = email
+    billing['email'] = 'alopolskaali@gmail.com'
     billing['phone'] = phone
 
     if delivery_fullname:

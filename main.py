@@ -10,11 +10,10 @@ import unidecode
 url = 'https://api.baselinker.com/connector.php'
 token = '1011-10210-OYC7U14WRGM51M3WD5OKJ9TZPSO60MXQ09MJL92BGZ71Z0ME9DERL4INTVCTT3DS'
 
-
 wcapi = API(
-    url="http://alopl.nazwa.pl/wordpress/wpn_alo",
-    consumer_key="ck_424cc643b9dc797ea3b66b6c454b89db284fc198",
-    consumer_secret="cs_199dcc9c5a59507f0314d892e00cd5d2e5959f1e",
+    url="https://alopl.nazwa.pl/wordpress/wpn_nowypress",
+    consumer_key="ck_4314dd53858243c893d4268ccbbd47f33a79b311",
+    consumer_secret="cs_033f1c30bc58846be334ebfeae444c302a8dd660",
     wp_api=True,
     version="wc/v3"
 )
@@ -78,6 +77,7 @@ def parse_order(
     delivery_country,
     delivery_company,
     line_items_array,
+	shipping_lines_array,
     currency,
     shipping_total,
     order_id
@@ -96,7 +96,7 @@ def parse_order(
     data['shipping'] = shipping
     data['line_items'] = line_items_array
     data['meta_data'] = meta_data_array
-    #data['shipping_lines'] = shipping_lines_array
+    data['shipping_lines'] = shipping_lines_array
 
     data['payment_method'] = payment_method
     data['payment_method_title'] = payment_method
@@ -182,9 +182,20 @@ def create_woo_order(bs_orders):
 
         line_items_array = []
         shipping_lines_array = []
+        # meta_data = []
+        # meta_data_dict = {}
+        # meta_data_dict['key'] = 'bs_order_id'
+        # meta_data_dict['value'] =
+        # meta_data.append(order_id)
 
 
         for product in id['products']:
+            shipping_lines_dict = {}
+            shipping_lines_dict['method_title'] = id['delivery_method']
+            shipping_lines_dict['method_id'] = '2'
+            shipping_lines_dict['total'] = str(id['delivery_price'])
+            shipping_lines_array.append(shipping_lines_dict)
+
             line_items_dict = {}
 
             #line_items_dict['sku'] = product['sku']
@@ -208,9 +219,9 @@ def create_woo_order(bs_orders):
                                   delivery_city,
                                   delivery_postcode,
                                   delivery_country,
-
                                   delivery_company,
                                   line_items_array,
+								  shipping_lines_array,
                                   currency,
                                   shipping_total,
                                   order_id))
@@ -221,11 +232,26 @@ def chk_available_orders():
     bs_orders = get_orders_bs(source_status)
     if not bs_orders['orders']:
         print('No available orders in status: {} checked at: {}'.format(source_status, datetime.datetime.now()))
-        time.sleep(15*60)
+        time.sleep(30*60)
         return chk_available_orders()
     else:
         return bs_orders
 
+def get_bs_order_id(order):
+    meta_data_list = order['meta_data']
+    for item in meta_data_list:
+        if item['key'] == 'baselinker_order_id':
+            order_id = item['value']
+            return order_id
+
+def check_if_order_exist(new_order_id):
+    orders = wcapi.get("orders").json()
+    for order in orders:
+        existing_order_id = get_bs_order_id(order)
+        if new_order_id == existing_order_id:
+            return True
+        else:
+            return False
 
 
 source_status = input('Provide source status [press enter for default]: ')
@@ -252,6 +278,16 @@ while True:
             resp = wcapi.post("orders", order)
         except Timeout as err:
             print('Request timed out at: {} with error: {}'.format(datetime.datetime.now(), err))
+            new_order_id = get_bs_order_id(order)
+            order_exist = check_if_order_exist(new_order_id)
+            if order_exist == True:
+                print('Order {} timeout but was sucessfully added'.format(new_order_id))
+                change_status = set_order_status(new_order_id, dest_status)
+                if change_status != 200:
+                    print('Issue with changing status for order_id: {}'.format(order_id))
+                else:
+                    print('Changed status of order id: {} to {} at: {}'.format(order_id, dest_status,
+                                                                               datetime.datetime.now()))
 
         if resp.status_code == 201:
             resp_json = resp.json()

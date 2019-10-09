@@ -182,22 +182,16 @@ def create_woo_order(bs_orders):
 
         line_items_array = []
         shipping_lines_array = []
-        # meta_data = []
-        # meta_data_dict = {}
-        # meta_data_dict['key'] = 'bs_order_id'
-        # meta_data_dict['value'] =
-        # meta_data.append(order_id)
+
+        shipping_lines_dict = {}
+        shipping_lines_dict['method_title'] = id['delivery_method']
+        shipping_lines_dict['method_id'] = '2'
+        shipping_lines_dict['total'] = str(id['delivery_price'])
+        shipping_lines_array.append(shipping_lines_dict)
 
 
         for product in id['products']:
-            shipping_lines_dict = {}
-            shipping_lines_dict['method_title'] = id['delivery_method']
-            shipping_lines_dict['method_id'] = '2'
-            shipping_lines_dict['total'] = str(id['delivery_price'])
-            shipping_lines_array.append(shipping_lines_dict)
-
             line_items_dict = {}
-
             #line_items_dict['sku'] = product['sku']
             line_items_dict['sku'] = product['sku']
             line_items_dict['quantity'] = product['quantity']
@@ -284,9 +278,9 @@ while True:
                 print('Order {} timeout but was sucessfully added'.format(new_order_id))
                 change_status = set_order_status(new_order_id, dest_status)
                 if change_status != 200:
-                    print('Issue with changing status for order_id: {}'.format(order_id))
+                    print('Issue with changing status for order_id: {}'.format(new_order_id))
                 else:
-                    print('Changed status of order id: {} to {} at: {}'.format(order_id, dest_status,
+                    print('Changed status of order id: {} to {} at: {}'.format(new_order_id, dest_status,
                                                                                datetime.datetime.now()))
 
         if resp.status_code == 201:

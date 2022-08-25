@@ -1,0 +1,8 @@
+{ "bs_api_endpoint": "https://api.baselinker.com/connector.php",
+  "bs_token": "INSERT YOUR TOKEN HERE",   "woo_url": "http://YOUR_STORE_URL.com",
+  "woo_consumer_key": "ck_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  "woo_consumer_secret": "ck_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  "woo_version": "wc/v3",
+  "bs_source_status": "INSERT BASELINKER SOURCE STATUS ID",
+  "woo_destination_status": "INSERT WOOCOMMERCE DESTINATION STATUS ID"
+}
